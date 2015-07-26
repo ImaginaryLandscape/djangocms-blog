@@ -15,26 +15,6 @@ class BlogPlugin(CMSPluginBase):
 
 class BlogLatestEntriesPlugin(BlogPlugin):
     """
-    Non cached plugin which returns the latest posts taking into account the
-      user / toolbar state
-    """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
-    name = _('Latest Blog Articles')
-    model = LatestPostsPlugin
-    form = LatestEntriesForm
-    filter_horizontal = ('categories',)
-    fields = ('latest_posts', 'tags', 'categories')
-    cache = False
-
-    def render(self, context, instance, placeholder):
-        context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'])
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
-        return context
-
-
-class BlogLatestEntriesPluginCached(BlogPlugin):
-    """
     Cached plugin which returns the latest published posts
     """
     render_template = 'djangocms_blog/plugins/latest_entries.html'
@@ -45,10 +25,19 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     fields = ('latest_posts', 'tags', 'categories')
 
     def render(self, context, instance, placeholder):
-        context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts()
+        context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
+        context['posts_list'] = instance.get_posts(context['request'])
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
+
+
+class BlogLatestEntriesPluginUnCached(BlogLatestEntriesPlugin):
+    """
+    Non cached plugin which returns the latest posts taking into account the
+      user / toolbar state
+    """
+    name = _('Latest Blog Articles (uncached)')
+    cache = False
 
 
 class BlogAuthorPostsPlugin(BlogPlugin):
@@ -102,6 +91,7 @@ class BlogArchivePlugin(BlogPlugin):
 
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
+plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
