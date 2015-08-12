@@ -29,6 +29,7 @@ class BlogCategory(TranslatableModel):
     """
     parent = models.ForeignKey('self', verbose_name=_('parent'), null=True,
                                blank=True)
+    sort_order = models.PositiveIntegerField(default=0, blank=True, null=True)
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
 

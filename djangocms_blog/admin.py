@@ -19,8 +19,15 @@ except ImportError:
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
+    list_display = ['name', 'parent', 'sort_order']
+    list_editable = ['sort_order']
+    list_filter = ['parent']
+
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
+
+    class Meta:
+        ordering = ('parent', 'sort_order', 'name')
 
     class Media:
         css = {
