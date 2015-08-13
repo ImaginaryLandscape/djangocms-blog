@@ -8,7 +8,6 @@ class LatestEntriesForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LatestEntriesForm, self).__init__(*args, **kwargs)
-        self.fields['tags'].widget = TagAutoSuggest('taggit.Tag')
 
     class Media:
         css = {
