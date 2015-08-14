@@ -15,15 +15,14 @@ class BlogPlugin(CMSPluginBase):
 
 class BlogLatestEntriesPlugin(BlogPlugin):
     """
-    Non cached plugin which returns the latest posts taking into account the
-      user / toolbar state
+    Cached plugin which returns the latest published posts
     """
     render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
-    cache = False
+    fields = ('latest_posts', 'tags', 'categories')
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
@@ -32,21 +31,13 @@ class BlogLatestEntriesPlugin(BlogPlugin):
         return context
 
 
-class BlogLatestEntriesPluginCached(BlogPlugin):
+class BlogLatestEntriesPluginUnCached(BlogLatestEntriesPlugin):
     """
-    Cached plugin which returns the latest published posts
+    Non cached plugin which returns the latest posts taking into account the
+      user / toolbar state
     """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
-    name = _('Latest Blog Articles')
-    model = LatestPostsPlugin
-    form = LatestEntriesForm
-    filter_horizontal = ('categories',)
-
-    def render(self, context, instance, placeholder):
-        context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts()
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
-        return context
+    name = _('Latest Blog Articles (uncached)')
+    cache = False
 
 
 class BlogAuthorPostsPlugin(BlogPlugin):
@@ -100,6 +91,7 @@ class BlogArchivePlugin(BlogPlugin):
 
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
+plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
