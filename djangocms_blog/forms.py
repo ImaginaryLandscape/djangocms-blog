@@ -14,3 +14,10 @@ class LatestEntriesForm(forms.ModelForm):
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
                                                  'djangocms_blog_admin.css'),)
         }
+
+class SelectPostsForm(forms.ModelForm):
+    class Media:
+        css = {
+            'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
+                                                 'djangocms_blog_admin.css'),)
+        }

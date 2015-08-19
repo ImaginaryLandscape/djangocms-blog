@@ -8,7 +8,7 @@
 <h4>Recent Articles:</h4>
 {% endif %}
 <ul>
-  {% for post in posts_list %}
+  {% for post in posts %}
   <li>
     <a href="{{ post.get_absolute_url }}">
     {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}

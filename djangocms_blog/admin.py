@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
-from .models import BlogCategory, Post, BlogPost, NewsPost
+from .models import BlogCategory, NewsCategory, BlogPost, NewsPost
 from .settings import get_setting
 
 try:
@@ -35,6 +35,12 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
                                                  'djangocms_blog_admin.css'),)
         }
 
+class NewsCategoryAdmin(BlogCategoryAdmin):
+    list_display = ['name', 'sort_order']
+    list_filter = []
+
+    class Meta:
+        ordering = ('sort_order', 'name')
 
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                 PlaceholderAdminMixin, TranslatableAdmin):
@@ -127,5 +133,6 @@ class NewsPostAdmin(PostAdmin):
 
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
+admin.site.register(NewsCategory, NewsCategoryAdmin)
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(NewsPost, NewsPostAdmin)

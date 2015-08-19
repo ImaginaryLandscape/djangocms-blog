@@ -69,6 +69,50 @@ class BlogCategory(TranslatableModel):
                 self.slug = slugify(force_text(self.name))
         self.save_translations()
 
+class NewsCategory(TranslatableModel):
+    """
+    Blog category
+    """
+    sort_order = models.PositiveIntegerField(default=0, blank=True, null=True)
+    date_created = models.DateTimeField(_('created at'), auto_now_add=True)
+    date_modified = models.DateTimeField(_('modified at'), auto_now=True)
+
+    translations = TranslatedFields(
+        name=models.CharField(_('name'), max_length=255),
+        slug=models.SlugField(_('slug'), blank=True, db_index=True),
+        meta={'unique_together': (('language_code', 'slug'),)}
+    )
+
+    objects = TranslationManager()
+
+    class Meta:
+        verbose_name = _('news category')
+        verbose_name_plural = _('news categories')
+
+    @property
+    def count(self):
+        return self.news_posts.filter(publish=True).count()
+
+    def get_absolute_url(self):
+        lang = get_language()
+        if self.has_translation(lang):
+            slug = self.safe_translation_getter('slug', language_code=lang)
+            return reverse('djangocms_blog:newsposts-category', kwargs={'category': slug})
+        # in case category doesn't exist in this language, gracefully fallback
+        # to posts-latest
+        return reverse('djangocms_blog:newsposts-latest')
+
+    def __str__(self):
+        return self.safe_translation_getter('name')
+
+    def save(self, *args, **kwargs):
+        super(NewsCategory, self).save(*args, **kwargs)
+        for lang in self.get_available_languages():
+            self.set_current_language(lang)
+            if not self.slug and self.name:
+                self.slug = slugify(force_text(self.name))
+        self.save_translations()
+    
 
 @python_2_unicode_compatible
 class Post(ModelMeta, TranslatableModel):
@@ -86,8 +130,6 @@ class Post(ModelMeta, TranslatableModel):
     date_published_end = models.DateTimeField(_(u'published Until'), null=True,
                                               blank=True)
     publish = models.BooleanField(_(u'publish'), default=False)
-    categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
-                                        blank=True, related_name='blog_posts',)
     main_image = FilerImageField(verbose_name=_(u'main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
@@ -227,6 +269,8 @@ class Post(ModelMeta, TranslatableModel):
         return self.make_full_url(self.get_absolute_url())
 
 class BlogPost(Post):
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
+        related_name='blog_posts',)
     objects = GenericDateTaggedManager()
     class Meta:
         verbose_name = _('blog article')
@@ -235,6 +279,8 @@ class BlogPost(Post):
         get_latest_by = 'date_published'
 
 class NewsPost(Post):
+    categories = models.ManyToManyField('djangocms_blog.NewsCategory', verbose_name=_(u'category'),
+        blank=True, related_name='news_posts',)
     objects = GenericDateTaggedManager()
     class Meta:
         verbose_name = _('news article')
@@ -266,8 +312,11 @@ class BasePostPlugin(CMSPlugin):
             posts = posts.published()
         return posts
 
-    def __str__(self):
-        return force_text(self.latest_posts)
+    def __str__(self):        
+        try:
+            return force_text(self.latest_posts)
+        except:
+            pass
 
 
 class LatestPostsPlugin(BasePostPlugin):
@@ -294,6 +343,12 @@ class LatestPostsPlugin(BasePostPlugin):
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
         return posts.distinct()[:self.latest_posts]
+
+class SelectPostsPlugin(BasePostPlugin):
+    posts = models.ManyToManyField('BlogPost', related_name="djangocms_blog_posts_plugin")
+
+    def __unicode__(self):
+        return u"%s" % (self.posts.count())
 
 
 class AuthorEntriesPlugin(BasePostPlugin):

@@ -3,9 +3,10 @@ from cms.models.pluginmodel import CMSPlugin
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
+from django import forms
 
-from .forms import LatestEntriesForm
-from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post
+from .forms import LatestEntriesForm, SelectPostsForm
+from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post, BlogPost, SelectPostsPlugin
 from .settings import get_setting
 
 
@@ -89,6 +90,18 @@ class BlogArchivePlugin(BlogPlugin):
         context['dates'] = Post.objects.get_months(queryset=Post.objects.published())
         return context
 
+class BlogSelectPostsPlugin(BlogPlugin):
+    module = _('Blog')
+    filter_horizontal = ('posts',)
+    form = SelectPostsForm
+    name = _('Select Blog Articles')
+    model = SelectPostsPlugin
+    render_template = 'djangocms_blog/plugins/posts.html'
+
+    def render(self, context, instance, placeholder):
+        context['posts'] = instance.posts.all()
+        return context
+
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
 plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
@@ -96,3 +109,4 @@ plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)
+plugin_pool.register_plugin(BlogSelectPostsPlugin)
