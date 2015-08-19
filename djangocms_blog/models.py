@@ -87,7 +87,7 @@ class Post(ModelMeta, TranslatableModel):
                                               blank=True)
     publish = models.BooleanField(_(u'publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
-                                        related_name='blog_posts',)
+                                        blank=True, related_name='blog_posts',)
     main_image = FilerImageField(verbose_name=_(u'main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
@@ -226,6 +226,32 @@ class Post(ModelMeta, TranslatableModel):
     def get_full_url(self):
         return self.make_full_url(self.get_absolute_url())
 
+class BlogPost(Post):
+    objects = GenericDateTaggedManager()
+    class Meta:
+        verbose_name = _('blog article')
+        verbose_name_plural = _('blog articles')
+        ordering = ('-date_published', '-date_created')
+        get_latest_by = 'date_published'
+
+class NewsPost(Post):
+    objects = GenericDateTaggedManager()
+    class Meta:
+        verbose_name = _('news article')
+        verbose_name_plural = _('news articles')
+        ordering = ('-date_published', '-date_created')
+        get_latest_by = 'date_published'
+
+    def get_absolute_url(self):
+        kwargs = {'year': self.date_published.year,
+                  'month': '%02d' % self.date_published.month,
+                  'day': '%02d' % self.date_published.day,
+                  'slug': self.safe_translation_getter('slug',
+                                                       language_code=get_language(),
+                                                       any_language=True)}
+        return reverse('djangocms_news:newspost-detail', kwargs=kwargs)
+        
+
 
 @python_2_unicode_compatible
 class BasePostPlugin(CMSPlugin):
@@ -235,7 +261,7 @@ class BasePostPlugin(CMSPlugin):
 
     def post_queryset(self, request=None):
         language = get_language()
-        posts = Post._default_manager.active_translations(language_code=language)
+        posts = BlogPost._default_manager.active_translations(language_code=language)
         if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
             posts = posts.published()
         return posts

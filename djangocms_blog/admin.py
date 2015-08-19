@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
-from .models import BlogCategory, Post
+from .models import BlogCategory, Post, BlogPost, NewsPost
 from .settings import get_setting
 
 try:
@@ -102,6 +102,30 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                                                  'djangocms_blog_admin.css'),)
         }
 
+class BlogPostAdmin(PostAdmin):
+    pass
+
+class NewsPostAdmin(PostAdmin):
+    _fieldsets = [
+        (None, {
+            'fields': [('title', 'publish')]
+        }),
+        ('Info', {
+            'fields': (['slug', 'tags'],
+                       ('date_published', 'date_published_end', 'enable_comments')),
+            'classes': ('collapse',)
+        }),
+        ('Images', {
+            'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
+            'classes': ('collapse',)
+        }),
+        ('SEO', {
+            'fields': [('meta_description', 'meta_title', 'meta_keywords')],
+            'classes': ('collapse',)
+        }),
+    ]
+
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
-admin.site.register(Post, PostAdmin)
+admin.site.register(BlogPost, BlogPostAdmin)
+admin.site.register(NewsPost, NewsPostAdmin)

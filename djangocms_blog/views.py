@@ -6,7 +6,7 @@ from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
-from .models import BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, Post
+from .models import BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, BlogPost, NewsPost
 from .settings import get_setting
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class BaseBlogView(ViewUrlMixin):
 
 
 class PostListView(BaseBlogView, ListView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     paginate_by = get_setting('PAGINATION')
@@ -38,9 +38,13 @@ class PostListView(BaseBlogView, ListView):
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
+class NewsPostListView(PostListView):
+    model = NewsPost
+    template_name = 'djangocms_blog/newspost_list.html'
+    view_url_name = 'djangocms_blog:newsposts-latest'
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post'
     template_name = 'djangocms_blog/post_detail.html'
     slug_field = 'slug'
@@ -59,9 +63,27 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
         return context
 
+class NewsPostDetailView(PostDetailView):
+    model = NewsPost
+    template_name = 'djangocms_blog/newspost_detail.html'
+    view_url_name = 'djangocms_blog:newspost-detail'
+
+    def get(self, *args, **kwargs):
+        # submit object to cms to get corrent language switcher and selected category behavior
+        if hasattr(self.request, 'toolbar'):
+            self.request.toolbar.set_object(self.get_object())
+        return super(NewsPostDetailView, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(NewsPostDetailView, self).get_context_data(**kwargs)
+        context['meta'] = self.get_object().as_meta()
+        context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
+        setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
+        return context
+
 
 class PostArchiveView(BaseBlogView, ListView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     date_field = 'date_published'
@@ -87,9 +109,14 @@ class PostArchiveView(BaseBlogView, ListView):
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
+class NewsPostArchiveView(PostArchiveView):
+    model = NewsPost
+    template_name = 'djangocms_blog/newspost_list.html'
+    view_url_name = 'djangocms_blog:newsposts-archive'
+
 
 class TaggedListView(BaseBlogView, ListView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     paginate_by = get_setting('PAGINATION')
@@ -108,7 +135,7 @@ class TaggedListView(BaseBlogView, ListView):
 
 
 class AuthorEntriesView(BaseBlogView, ListView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     paginate_by = get_setting('PAGINATION')
@@ -128,7 +155,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
 
 
 class CategoryEntriesView(BaseBlogView, ListView):
-    model = Post
+    model = BlogPost
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     _category = None

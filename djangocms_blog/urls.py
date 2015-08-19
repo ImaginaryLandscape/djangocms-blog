@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 
 from .feeds import LatestEntriesFeed, TagFeed
 from .views import (AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView,
-                    PostListView, TaggedListView)
+                    PostListView, NewsPostListView, TaggedListView)
 
 urlpatterns = patterns(
     '',

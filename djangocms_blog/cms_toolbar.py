@@ -15,15 +15,15 @@ class BlogToolbar(CMSToolbar):
         if not self.request.user.has_perm('djangocms_blog.add_post'):
             return   # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
-        url = reverse('admin:djangocms_blog_post_changelist')
+        url = reverse('admin:djangocms_blog_blogpost_changelist')
         admin_menu.add_modal_item(_('Post list'), url=url)
-        url = reverse('admin:djangocms_blog_post_add')
+        url = reverse('admin:djangocms_blog_blogpost_add')
         admin_menu.add_modal_item(_('Add post'), url=url)
 
         current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
         if current_post and self.request.user.has_perm('djangocms_blog.change_post'):   # pragma: no cover
             admin_menu.add_modal_item(_('Edit Post'), reverse(
-                'admin:djangocms_blog_post_change', args=(current_post.pk,)),
+                'admin:djangocms_blog_blogpost_change', args=(current_post.pk,)),
                 active=True)
 
     def post_template_populate(self):

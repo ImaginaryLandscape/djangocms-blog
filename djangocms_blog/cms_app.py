@@ -12,4 +12,10 @@ class BlogApp(CMSApp):
     app_name = 'djangocms_blog'
     menus = [BlogCategoryMenu]
 
+class NewsApp(CMSApp):
+    name = _('News')
+    urls = ['djangocms_blog.news_urls']
+    app_name = 'djangocms_news'
+
 apphook_pool.register(BlogApp)
+apphook_pool.register(NewsApp)
