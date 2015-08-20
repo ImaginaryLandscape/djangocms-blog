@@ -1,2 +1,7 @@
 {% extends "djangocms_blog/base.html" %}
 
+{% load cms_tags %}
+
+{% block sidebar %}
+{% static_placeholder "news sidebar" %}
+{% endblock %}

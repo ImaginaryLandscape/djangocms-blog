@@ -16,7 +16,6 @@ class NewsApp(CMSApp):
     name = _('News')
     urls = ['djangocms_blog.news_urls']
     app_name = 'djangocms_news'
-    menus = [NewsCategoryMenu]
 
 apphook_pool.register(BlogApp)
 apphook_pool.register(NewsApp)

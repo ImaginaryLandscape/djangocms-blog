@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from .forms import LatestEntriesForm, SelectPostsForm
-from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post, BlogPost, SelectPostsPlugin
+from .models import AuthorEntriesPlugin, BlogCategory, NewsCategory, LatestPostsPlugin, Post, BlogPost, NewsPost, SelectPostsPlugin
 from .settings import get_setting
 
 
@@ -69,7 +69,7 @@ class BlogTagsPlugin(BlogPlugin):
 
 class BlogCategoryPlugin(BlogPlugin):
     module = _('Blog')
-    name = _('Categories')
+    name = _('Blog Categories')
     model = CMSPlugin
     render_template = 'djangocms_blog/plugins/categories.html'
 
@@ -78,16 +78,33 @@ class BlogCategoryPlugin(BlogPlugin):
         context['categories'] = BlogCategory.objects.all()
         return context
 
+class NewsCategoryPlugin(BlogCategoryPlugin):
+    name = _('News Categories')
+
+    def render(self, context, instance, placeholder):
+        context = super(NewsCategoryPlugin, self).render(context, instance, placeholder)
+        context['categories'] = NewsCategory.objects.all()
+        return context
+
 
 class BlogArchivePlugin(BlogPlugin):
     module = _('Blog')
-    name = _('Archive')
+    name = _('BlogArchive')
     model = CMSPlugin
     render_template = 'djangocms_blog/plugins/archive.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
-        context['dates'] = Post.objects.get_months(queryset=Post.objects.published())
+        context['dates'] = BlogPost.objects.get_months(queryset=BlogPost.objects.published())
+        return context
+
+class NewsArchivePlugin(BlogArchivePlugin):
+    name = _('News Archive')
+    render_template = 'djangocms_blog/plugins/newsarchive.html'
+
+    def render(self, context, instance, placeholder):
+        context = super(NewsArchivePlugin, self).render(context, instance, placeholder)
+        context['dates'] = NewsPost.objects.get_months(queryset=NewsPost.objects.published())
         return context
 
 class BlogSelectPostsPlugin(BlogPlugin):
@@ -108,5 +125,7 @@ plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
+plugin_pool.register_plugin(NewsArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)
+plugin_pool.register_plugin(NewsCategoryPlugin)
 plugin_pool.register_plugin(BlogSelectPostsPlugin)
