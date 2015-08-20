@@ -1,20 +1,25 @@
 {% extends "djangocms_blog/base.html" %}
-{% load i18n thumbnail %}{% spaceless %}
+{% load i18n thumbnail cms_tags %}{% spaceless %}
 
 {% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
+{% block content_header %}
+    <header>
+        <h1>
+        {% if author %}{% trans "Author" %}: {{ author.get_full_name }}
+        {% elif archive_date %}{% trans "Archive" %}: {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+        {% elif tagged_entries %}{% trans "Tag" %}: {{ tagged_entries|capfirst }}
+        {% elif category %}{% trans "Topics" %}: {{ category }}{% endif %}
+        </h1>
+    </header>
+{% endblock %}
+
 {% block content_blog %}
 <section class="blog-list">
-    {% block blog_title %}
-    <header>
-        <h2>
-        {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
-        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
-        {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
-        {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
-        </h2>
-    </header>
-    {% endblock %}
+    {% if author or archive_date or tagged_entries or category %}
+    {% else %}
+      {% static_placeholder "blog landing content" %}
+    {% endif %}
     {% for post in post_list %}
         {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
     {% empty %}

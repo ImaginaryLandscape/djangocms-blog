@@ -1,22 +1,28 @@
 {% extends "djangocms_blog/base_news.html" %}
-{% load i18n thumbnail %}{% spaceless %}
+{% load i18n thumbnail cms_tags %}{% spaceless %}
 
 {% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
 {% block content_blog %}
-<section class="blog-list">
+<section class="news-list">
     {% block blog_title %}
     <header>
-        <h2>
+        <h1>
+        {% block title %}
+        {% page_attribute "page_title" request.current_page.get_root %}          
         {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
         {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
         {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
         {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
-        </h2>
+        {% endblock %}
+        </h1>
     </header>
     {% endblock %}
     {% for post in post_list %}
         {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+        {% if forloop.counter|divisibleby:2 %}
+        <hr class="divider">
+        {% endif %}
     {% empty %}
     <p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}
