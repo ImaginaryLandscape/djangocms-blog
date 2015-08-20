@@ -19,7 +19,8 @@ from taggit_autosuggest.managers import TaggableManager
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
-BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
+BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_blogpost_current'
+NEWS_CURRENT_POST_IDENTIFIER = 'djangocms_newspost_current'
 
 
 @python_2_unicode_compatible
@@ -97,10 +98,10 @@ class NewsCategory(TranslatableModel):
         lang = get_language()
         if self.has_translation(lang):
             slug = self.safe_translation_getter('slug', language_code=lang)
-            return reverse('djangocms_blog:newsposts-category', kwargs={'category': slug})
+            return reverse('djangocms_news:newsposts-category', kwargs={'category': slug})
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
-        return reverse('djangocms_blog:newsposts-latest')
+        return reverse('djangocms_news:newsposts-latest')
 
     def __str__(self):
         return self.safe_translation_getter('name')

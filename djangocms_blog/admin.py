@@ -112,25 +112,7 @@ class BlogPostAdmin(PostAdmin):
     pass
 
 class NewsPostAdmin(PostAdmin):
-    _fieldsets = [
-        (None, {
-            'fields': [('title', 'publish')]
-        }),
-        ('Info', {
-            'fields': (['slug', 'tags'],
-                       ('date_published', 'date_published_end', 'enable_comments')),
-            'classes': ('collapse',)
-        }),
-        ('Images', {
-            'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
-            'classes': ('collapse',)
-        }),
-        ('SEO', {
-            'fields': [('meta_description', 'meta_title', 'meta_keywords')],
-            'classes': ('collapse',)
-        }),
-    ]
-
+    pass
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(NewsCategory, NewsCategoryAdmin)

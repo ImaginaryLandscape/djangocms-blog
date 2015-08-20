@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url
 
 from .feeds import LatestNewsEntriesFeed, TagFeed
-from .views import (NewsPostArchiveView, NewsPostDetailView, NewsPostListView)
+from .views import (NewsPostArchiveView, NewsPostDetailView, NewsPostListView, CategoryNewsEntriesView)
 
 urlpatterns = patterns(
     '',
@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'^(?P<year>\d{4})/$', NewsPostArchiveView.as_view(), name='newsposts-archive'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', NewsPostArchiveView.as_view(), name='newsposts-archive'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$', NewsPostDetailView.as_view(), name='newspost-detail'),
+    url(r'^category/(?P<category>[\w\.@+-]+)/$', CategoryNewsEntriesView.as_view(), name='newsposts-category'),
 )

@@ -6,7 +6,7 @@ from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
-from .models import BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, BlogPost, NewsPost
+from .models import BLOG_CURRENT_POST_IDENTIFIER, NEWS_CURRENT_POST_IDENTIFIER, BlogCategory, BlogPost, NewsPost, NewsCategory
 from .settings import get_setting
 
 User = get_user_model()
@@ -78,7 +78,8 @@ class NewsPostDetailView(PostDetailView):
         context = super(NewsPostDetailView, self).get_context_data(**kwargs)
         context['meta'] = self.get_object().as_meta()
         context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
-        setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
+        delattr(self.request, BLOG_CURRENT_POST_IDENTIFIER)
+        setattr(self.request, NEWS_CURRENT_POST_IDENTIFIER, self.get_object())
         return context
 
 
@@ -185,3 +186,33 @@ class CategoryEntriesView(BaseBlogView, ListView):
         context = super(CategoryEntriesView, self).get_context_data(**kwargs)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
+
+class CategoryNewsEntriesView(CategoryEntriesView):
+    model = NewsPost
+    template_name = 'djangocms_blog/newspost_list.html'
+    view_url_name = 'djangocms_news:newsposts-category'
+
+    @property
+    def category(self):
+        if not self._category:
+            self._category = NewsCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).latest('pk')
+        return self._category
+
+    def get(self, *args, **kwargs):
+        # submit object to cms toolbar to get correct language switcher behavior
+        if hasattr(self.request, 'toolbar'):
+            self.request.toolbar.set_object(self.category)
+        return super(CategoryNewsEntriesView, self).get(*args, **kwargs)
+
+    def get_queryset(self):
+        qs = super(CategoryNewsEntriesView, self).get_queryset()
+        if 'category' in self.kwargs:
+            qs = qs.filter(categories=self.category.pk)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        kwargs['category'] = self.category
+        context = super(CategoryNewsEntriesView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
+
