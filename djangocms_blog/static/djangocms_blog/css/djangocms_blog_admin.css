@@ -7,12 +7,7 @@
 }
 
 .selector {
-    width: auto;
     margin-right: 12px;
-}
-
-.selector-available, .selector-chosen {
-    width: auto;
 }
 
 .selector .selector-available input, .selector .selector-chosen input {
@@ -22,7 +17,10 @@
 form select {
     max-width: 266px;
 }
-
+.selector select {
+    max-width: none!important;
+    width: auto;
+}
 .as-selections.vTextField {
     width: 300px;
 }

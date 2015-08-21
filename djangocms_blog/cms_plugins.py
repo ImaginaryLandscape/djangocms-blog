@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 
 from .forms import LatestEntriesForm, SelectPostsForm
-from .models import AuthorEntriesPlugin, BlogCategory, NewsCategory, LatestPostsPlugin, Post, BlogPost, NewsPost, SelectPostsPlugin
+from .models import AuthorEntriesPlugin, BlogCategory, NewsCategory, LatestBlogPostsPlugin, LatestNewsPostsPlugin, Post, BlogPost, NewsPost, SelectPostsPlugin, SelectNewsPostsPlugin
 from .settings import get_setting
 
 
@@ -20,7 +20,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     """
     render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
-    model = LatestPostsPlugin
+    model = LatestBlogPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ('latest_posts', 'tags', 'categories')
@@ -31,6 +31,15 @@ class BlogLatestEntriesPlugin(BlogPlugin):
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
+class NewsLatestEntriesPlugin(BlogLatestEntriesPlugin):
+    name = _('Latest News Articles')
+    model = LatestNewsPostsPlugin
+
+    def render(self, context, instance, placeholder):
+        context = super(NewsLatestEntriesPlugin, self).render(context, instance, placeholder)
+        context['posts_list'] = instance.get_posts(context['request'])
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
 
 class BlogLatestEntriesPluginUnCached(BlogLatestEntriesPlugin):
     """
@@ -119,9 +128,13 @@ class BlogSelectPostsPlugin(BlogPlugin):
         context['posts'] = instance.posts.all()
         return context
 
+class NewsSelectPostsPlugin(BlogSelectPostsPlugin):
+    model = SelectNewsPostsPlugin
+    name = _('Select News Articles')
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
-plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
+plugin_pool.register_plugin(NewsLatestEntriesPlugin)
+#plugin_pool.register_plugin(BlogLatestEntriesPluginUnCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
@@ -129,3 +142,4 @@ plugin_pool.register_plugin(NewsArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)
 plugin_pool.register_plugin(NewsCategoryPlugin)
 plugin_pool.register_plugin(BlogSelectPostsPlugin)
+plugin_pool.register_plugin(NewsSelectPostsPlugin)

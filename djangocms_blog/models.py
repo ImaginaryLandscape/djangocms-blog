@@ -155,7 +155,7 @@ class Post(ModelMeta, TranslatableModel):
     translations = TranslatedFields(
         title=models.CharField(_(u'title'), max_length=255),
         slug=models.SlugField(_(u'slug'), blank=True, db_index=True),
-        abstract=HTMLField(_(u'abstract'), blank=True, default=''),
+        abstract=HTMLField(_(u'teaser'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_(u'post meta description'),
                                           blank=True, default=''),
         meta_keywords=models.TextField(verbose_name=_(u'post meta keywords'),
@@ -322,14 +322,8 @@ class BasePostPlugin(CMSPlugin):
 
 
 class LatestPostsPlugin(BasePostPlugin):
-
     latest_posts = models.IntegerField(_(u'articles'), default=get_setting('LATEST_POSTS'),
-                                       help_text=_(u'The number of latests articles to be displayed.'))
-    tags = TaggableManager(_(u'filter by tag'), blank=True,
-                           help_text=_(u'Show only the blog articles tagged with chosen tags.'),
-                           related_name='djangocms_blog_latest_post')
-    categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True, verbose_name=_(u'filter by category'),
-                                        help_text=_(u'Show only the blog articles tagged with chosen categories.'))
+        help_text=_(u'The number of latests articles to be displayed.'))
 
     def __str__(self):
         return _(u'%s latest articles by tag') % self.latest_posts
@@ -346,12 +340,33 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(categories__in=list(self.categories.all()))
         return posts.distinct()[:self.latest_posts]
 
+class LatestBlogPostsPlugin(LatestPostsPlugin):
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True, verbose_name=_(u'filter by category'),
+        help_text=_(u'Show only the blog articles tagged with chosen categories.'))
+    tags = TaggableManager(_(u'filter by tag'), blank=True,
+        help_text=_(u'Show only the blog articles tagged with chosen tags.'),
+        related_name='djangocms_blog_latest_post')
+
+class LatestNewsPostsPlugin(LatestPostsPlugin):
+    categories = models.ManyToManyField('djangocms_blog.NewsCategory', blank=True, verbose_name=_(u'filter by category'),
+        help_text=_(u'Show only the news articles tagged with chosen categories.'))
+    tags = TaggableManager(_(u'filter by tag'), blank=True,
+        help_text=_(u'Show only the blog articles tagged with chosen tags.'),
+        related_name='djangocms_news_latest_post')
+
+
 class SelectPostsPlugin(BasePostPlugin):
     posts = models.ManyToManyField('BlogPost', related_name="djangocms_blog_posts_plugin")
 
     def __unicode__(self):
         return u"%s" % (self.posts.count())
 
+class SelectNewsPostsPlugin(BasePostPlugin):
+    posts = models.ManyToManyField('NewsPost', related_name="djangocms_news_posts_plugin")
+
+    def __unicode__(self):
+        return u"%s" % (self.posts.count())
+    
 
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(

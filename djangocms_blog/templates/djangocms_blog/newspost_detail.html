@@ -27,3 +27,8 @@
 </article>
 <div class="blog-related-posts">{% render_placeholder post.related_posts %}</div>
 {% endblock content_blog %}
+
+{% block sidebar %}
+{{ block.super }}
+{% static_placeholder "news post sidebar" %}
+{% endblock %}

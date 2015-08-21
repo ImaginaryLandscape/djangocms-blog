@@ -80,7 +80,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
-        if get_setting('USE_ABSTRACT'):
+        if self.use_abstract():
             fsets[0][1]['fields'].append('abstract')
         if not get_setting('USE_PLACEHOLDER'):
             fsets[0][1]['fields'].append('post_text')
@@ -109,10 +109,13 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         }
 
 class BlogPostAdmin(PostAdmin):
-    pass
+    def use_abstract(self):
+        return get_setting('USE_ABSTRACT')
+            
 
 class NewsPostAdmin(PostAdmin):
-    pass
+    def use_abstract(self):
+        return get_setting('NEWS_USE_ABSTRACT')
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(NewsCategory, NewsCategoryAdmin)

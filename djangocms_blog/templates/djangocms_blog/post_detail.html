@@ -28,4 +28,5 @@
         <div class="blog-content">{% render_model post "post_text" "post_text" %}</div>
     {% endif %}
 </article>
+<div class="blog-related-posts">{% render_placeholder post.related_posts %}</div>
 {% endblock content_blog %}
