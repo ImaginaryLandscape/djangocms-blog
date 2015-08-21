@@ -168,6 +168,7 @@ class Post(ModelMeta, TranslatableModel):
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField('post_content', related_name='post_content')
+    related_posts = PlaceholderField('post_related_posts')
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')

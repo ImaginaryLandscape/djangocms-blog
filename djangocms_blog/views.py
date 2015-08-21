@@ -41,7 +41,7 @@ class PostListView(BaseBlogView, ListView):
 class NewsPostListView(PostListView):
     model = NewsPost
     template_name = 'djangocms_blog/newspost_list.html'
-    view_url_name = 'djangocms_blog:newsposts-latest'
+    view_url_name = 'djangocms_news:newsposts-latest'
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     model = BlogPost
@@ -66,7 +66,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 class NewsPostDetailView(PostDetailView):
     model = NewsPost
     template_name = 'djangocms_blog/newspost_detail.html'
-    view_url_name = 'djangocms_blog:newspost-detail'
+    view_url_name = 'djangocms_news:newspost-detail'
 
     def get(self, *args, **kwargs):
         # submit object to cms to get corrent language switcher and selected category behavior
@@ -113,7 +113,7 @@ class PostArchiveView(BaseBlogView, ListView):
 class NewsPostArchiveView(PostArchiveView):
     model = NewsPost
     template_name = 'djangocms_blog/newspost_list.html'
-    view_url_name = 'djangocms_blog:newsposts-archive'
+    view_url_name = 'djangocms_news:newsposts-archive'
 
 
 class TaggedListView(BaseBlogView, ListView):
