@@ -4,30 +4,27 @@
 {% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
 {% block content_blog %}
-<section class="news-list">
-    {% block blog_title %}
-    <header>
-        <h1>
-        {% block title %}
-        {% page_attribute "page_title" request.current_page.get_root %}          
-        {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
-        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
-        {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
-        {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
-        {% endblock %}
-        </h1>
-    </header>
-    {% endblock %}
+  <header>
+      <h1>
+      {% block title %}
+      {% page_attribute "page_title" request.current_page.get_root %}          
+      {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
+      {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+      {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
+      {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
+      {% endblock %}
+      </h1>
+  </header>
+  <section class="news-list">
     {% for post in post_list %}
         {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
         {% if forloop.counter|divisibleby:2 %}
         <hr class="divider">
         {% endif %}
-    {% empty %}
-    <p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}
+  </section>
     {% if author or archive_date or tagged_entries %}
-    <p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
+    <p class="blog-back"><a href="{% url 'djangocms_news:newsposts-latest' %}">{% trans "Back" %}</a></p>
     {% endif %}
     {% if is_paginated %}
     <nav class="{% firstof css_grid instance.css_grid %} pagination">
@@ -42,6 +39,5 @@
         {% endif %}
     </nav>
     {% endif %}
-</section>
 {% endblock %}
 {% endspaceless %}

@@ -7,12 +7,10 @@
 {% block title %}{{ post.get_title }}{% endblock %}
 
 {% block content_blog %}{% spaceless %}
-<article id="post-{{ post.slug }}" class="post-item post-detail">
+<article id="post-{{ post.slug }}" class="post-item post-detail newspost-detail">
     <header>
-        <h2>{% render_model post "title" %}</h2>
-        {% block blog_meta %}
-            {% include "djangocms_blog/includes/blog_meta.html" %}
-        {% endblock %}
+        <h1>{% render_model post "title" %}</h1>
+        <h2>{{ post.date_published|date:"DATE_FORMAT" }}</h2>
     </header>
     {% if post.main_image_id %}
     <div class="blog-visual">
