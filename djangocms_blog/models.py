@@ -354,6 +354,12 @@ class LatestNewsPostsPlugin(LatestPostsPlugin):
         help_text=_(u'Show only the blog articles tagged with chosen tags.'),
         related_name='djangocms_news_latest_post')
 
+    def post_queryset(self, request=None):
+        language = get_language()
+        posts = NewsPost._default_manager.active_translations(language_code=language)
+        if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
+            posts = posts.published()
+        return posts    
 
 class SelectPostsPlugin(BasePostPlugin):
     posts = models.ManyToManyField('BlogPost', related_name="djangocms_blog_posts_plugin")

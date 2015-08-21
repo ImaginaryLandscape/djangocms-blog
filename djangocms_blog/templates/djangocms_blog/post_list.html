@@ -1,30 +1,37 @@
 {% extends "djangocms_blog/base.html" %}
-{% load i18n thumbnail cms_tags %}{% spaceless %}
+{% load i18n thumbnail cms_tags static %}{% spaceless %}
 
 {% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
 {% block content_header %}
-    <header>
+  {% if author or archive_date or tagged_entries or category %}
+    <header class="blog-header">
+      <img src="{% static "img/topic_header.jpg" %}" />
         <h1>
-        {% if author %}{% trans "Author" %}: {{ author.get_full_name }}
-        {% elif archive_date %}{% trans "Archive" %}: {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
-        {% elif tagged_entries %}{% trans "Tag" %}: {{ tagged_entries|capfirst }}
-        {% elif category %}{% trans "Topics" %}: {{ category }}{% endif %}
+          <div class="container">
+          {% if author %}<span>{% trans "Author" %}:</span> {{ author.get_full_name }}
+          {% elif archive_date %}<span>{% trans "Archive" %}:</span> {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+          {% elif tagged_entries %}<span>{% trans "Tag" %}:</span> {{ tagged_entries|capfirst }}
+          {% elif category %}<span>{% page_attribute "page_title" request.current_page.get_root %}:</span> {{ category }}{% endif %}
+          </div>
         </h1>
     </header>
+  {% endif %}
 {% endblock %}
 
 {% block content_blog %}
 <section class="blog-list">
-    {% if author or archive_date or tagged_entries or category %}
+    {% if category %}
+      {% if category.parent %}
+        {% include "djangocms_blog/includes/category_loop.html" with category=category.parent %}
+      {% else %}
+        {% include "djangocms_blog/includes/category_loop.html" with category=category %}
+      {% endif %}
+    {% elif author or archive_date or tagged_entries %}
     {% else %}
-      {% static_placeholder "blog landing content" %}
+      {% placeholder "content" %}
     {% endif %}
-    {% for post in post_list %}
-        {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
-    {% empty %}
-    <p class="blog-empty">{% trans "No article found." %}</p>
-    {% endfor %}
+
     {% if author or archive_date or tagged_entries %}
     <p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
     {% endif %}

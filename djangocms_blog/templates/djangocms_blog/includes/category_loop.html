@@ -1,0 +1,22 @@
+<h3 class="green">Find more specifics about {{ category }} below:</h3>
+<ul class="blog-category-loop">
+{% if category.blogcategory_set.count %}
+  {% for cat in category.blogcategory_set.all %}
+  <li class="loop-category {% if request.path == cat.get_absolute_url %}active{% endif %}"><a href="{{ cat.get_absolute_url }}">{{ cat }} {% if cat.blog_posts.count %}<i class="icon-plus"></i>{% endif %}</a>
+    <ul>
+    {% for post in cat.blog_posts.all %}
+      <li class="loop-article"><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
+    {% empty %}
+      <li class="loop-empty">This category doesn't have any articles yet.</li>
+    {% endfor %}
+    </ul>
+  </li>
+  {% endfor %}
+{% else %}
+  {% for post in category.blog_posts.all %}
+    <li class="loop-article"><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
+  {% empty %}
+    <li class="loop-empty">This category doesn't have any articles yet.</li>
+  {% endfor %}
+{% endif %}
+</ul>

@@ -1,11 +1,9 @@
 {% load i18n thumbnail %}
 {% spaceless %}
 
-<div class="latest-entries">
+<div class="blog-entries">
 {% if instance.parent %}
 <h3>Featured Articles:</h3>
-{% else %}
-<h4>Recent Articles:</h4>
 {% endif %}
 <ul>
   {% for post in posts %}
