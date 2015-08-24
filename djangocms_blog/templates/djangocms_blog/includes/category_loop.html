@@ -1,8 +1,9 @@
+{% load sekizai_tags %}
 <h3 class="green">Find more specifics about {{ category }} below:</h3>
 <ul class="blog-category-loop">
 {% if category.blogcategory_set.count %}
   {% for cat in category.blogcategory_set.all %}
-  <li class="loop-category {% if request.path == cat.get_absolute_url %}active{% endif %}"><a href="{{ cat.get_absolute_url }}">{{ cat }} {% if cat.blog_posts.count %}<i class="icon-plus"></i>{% endif %}</a>
+  <li class="loop-category{% if cat.blog_posts.count %} has-posts{% endif %}{% if request.path == cat.get_absolute_url %} active{% endif %}"><a href="{{ cat.get_absolute_url }}">{{ cat }} {% if cat.blog_posts.count %}<i class="icon-plus{% if request.path == cat.get_absolute_url %} icon-minus{% endif %}"></i>{% endif %}</a>
     <ul>
     {% for post in cat.blog_posts.all %}
       <li class="loop-article"><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
@@ -20,3 +21,22 @@
   {% endfor %}
 {% endif %}
 </ul>
+
+{% addtoblock "js" %}
+<script>
+$(document).ready(function(){
+    $(".loop-category.active > ul").attr('style', 'display: block');
+    $(".loop-category > a").click(function(){
+        $li = $(this).parent();
+        $li.find('>ul').slideToggle('fast');
+        $li.toggleClass('active');
+        if($li.hasClass('active')){
+            $(this).find('.icon-plus').addClass('icon-minus');
+        } else {
+            $(this).find('.icon-plus').removeClass('icon-minus');
+        }
+        return false;
+    });
+});
+</script>
+{% endaddtoblock %}

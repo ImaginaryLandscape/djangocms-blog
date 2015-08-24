@@ -33,6 +33,10 @@ class BlogCategory(TranslatableModel):
     sort_order = models.PositiveIntegerField(default=0, blank=True, null=True)
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
+    intro = PlaceholderField('category_intro', related_name='blogcategory_intro')
+    content = PlaceholderField('category_content', related_name='blogcategory_content')
+    header_image = FilerImageField(verbose_name=_(u'header image'), blank=True, null=True,
+        on_delete=models.SET_NULL, related_name='blogcategory_image')
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
@@ -72,7 +76,7 @@ class BlogCategory(TranslatableModel):
 
 class NewsCategory(TranslatableModel):
     """
-    Blog category
+    News category
     """
     sort_order = models.PositiveIntegerField(default=0, blank=True, null=True)
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
