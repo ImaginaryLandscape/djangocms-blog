@@ -6,7 +6,7 @@
 {% block content_header %}
   {% if author or archive_date or tagged_entries or category %}
     <header class="blog-header">
-      <img src="{% thumbnail category.header_image "1280x600" crop %}" alt="{{ category.name }}" />
+      {% if category.header_image %}<img src="{% thumbnail category.header_image "1280x600" crop %}" alt="{{ category.name }}" />{% endif %}
         <h1>
           <div class="container">
           {% if author %}<span>{% trans "Author" %}:</span> {{ author.get_full_name }}
@@ -30,6 +30,13 @@
       {% endif %}
       {% render_placeholder category.content %}
     {% elif author or archive_date or tagged_entries %}
+      {% if post_list %}
+      <ul>
+      {% for post in post_list %}
+        <li><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
+      {% endfor %}    
+      </ul>
+      {% endif %}
     {% else %}
       {% placeholder "content" %}
     {% endif %}
