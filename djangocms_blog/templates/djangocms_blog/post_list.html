@@ -6,7 +6,7 @@
 {% block content_header %}
   {% if author or archive_date or tagged_entries or category %}
     <header class="blog-header">
-      <img src="{% thumbnail category.header_image "1280x600" %}" alt="{{ category.name }}" />
+      <img src="{% thumbnail category.header_image "1280x600" crop %}" alt="{{ category.name }}" />
         <h1>
           <div class="container">
           {% if author %}<span>{% trans "Author" %}:</span> {{ author.get_full_name }}
