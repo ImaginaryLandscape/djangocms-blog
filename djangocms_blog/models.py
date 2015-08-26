@@ -368,11 +368,19 @@ class LatestNewsPostsPlugin(LatestPostsPlugin):
 class SelectPostsPlugin(BasePostPlugin):
     posts = models.ManyToManyField('BlogPost', related_name="djangocms_blog_posts_plugin")
 
+    def copy_relations(self, oldinstance):
+        for post in oldinstance.posts.all():
+            self.posts.add(post)
+
     def __unicode__(self):
         return u"%s" % (self.posts.count())
 
 class SelectNewsPostsPlugin(BasePostPlugin):
     posts = models.ManyToManyField('NewsPost', related_name="djangocms_news_posts_plugin")
+
+    def copy_relations(self, oldinstance):
+        for post in oldinstance.posts.all():
+            self.posts.add(post)
 
     def __unicode__(self):
         return u"%s" % (self.posts.count())
