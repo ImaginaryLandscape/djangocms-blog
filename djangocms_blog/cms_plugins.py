@@ -27,7 +27,10 @@ class BlogLatestEntriesPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'])
+        try:
+            context['posts_list'] = instance.get_posts(context['request'])
+        except:
+            pass
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
@@ -37,7 +40,10 @@ class NewsLatestEntriesPlugin(BlogLatestEntriesPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(NewsLatestEntriesPlugin, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'])
+        try:
+            context['posts_list'] = instance.get_posts(context['request'])
+        except:
+            pass
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
