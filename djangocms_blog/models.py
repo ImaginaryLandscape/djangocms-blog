@@ -313,9 +313,7 @@ class BasePostPlugin(CMSPlugin):
 
     def post_queryset(self, request=None):
         language = get_language()
-        posts = BlogPost._default_manager.active_translations(language_code=language)
-        if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
-            posts = posts.published()
+        posts = BlogPost._default_manager.active_translations(language_code=language).published()
         return posts
 
     def __str__(self):        
@@ -360,9 +358,7 @@ class LatestNewsPostsPlugin(LatestPostsPlugin):
 
     def post_queryset(self, request=None):
         language = get_language()
-        posts = NewsPost._default_manager.active_translations(language_code=language)
-        if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
-            posts = posts.published()
+        posts = NewsPost._default_manager.active_translations(language_code=language).published()
         return posts    
 
 class SelectPostsPlugin(BasePostPlugin):
