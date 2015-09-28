@@ -47,6 +47,7 @@ class BlogCategory(TranslatableModel):
     objects = TranslationManager()
 
     class Meta:
+        ordering = ['sort_order']
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
 

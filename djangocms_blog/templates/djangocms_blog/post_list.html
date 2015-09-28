@@ -6,7 +6,7 @@
 {% block content_header %}
   {% if author or archive_date or tagged_entries or category %}
     <header class="blog-header">
-      {% if category.header_image %}<img src="{% thumbnail category.header_image "1280x600" crop %}" alt="{{ category.name }}" />{% endif %}
+      {% if category.header_image %}<img src="{% thumbnail category.header_image "1280x400" crop="center" %}" alt="{{ category.name }}" />{% endif %}
         <h1>
           <div class="container">
           {% if author %}<span>{% trans "Author" %}:</span> {{ author.get_full_name }}
@@ -23,11 +23,7 @@
 <section class="blog-list">
     {% if category %}
       {% render_placeholder category.intro %}
-      {% if category.parent %}
-        {% include "djangocms_blog/includes/category_loop.html" with category=category.parent %}
-      {% else %}
-        {% include "djangocms_blog/includes/category_loop.html" with category=category %}
-      {% endif %}
+      {% include "djangocms_blog/includes/category_loop.html" with category=category %}
       {% render_placeholder category.content %}
     {% elif author or archive_date or tagged_entries %}
       {% if post_list %}

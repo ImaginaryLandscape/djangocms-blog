@@ -1,7 +1,7 @@
 {% load sekizai_tags %}
 <h3 class="green">Find more specifics about {{ category }} below:</h3>
-<ul class="blog-category-loop">
 {% if category.blogcategory_set.count %}
+<ul class="blog-category-loop">
   {% for cat in category.blogcategory_set.all %}
   <li class="loop-category{% if cat.blog_posts.published.count %} has-posts{% endif %}{% if request.path == cat.get_absolute_url %} active{% endif %}"><a href="{{ cat.get_absolute_url }}">{{ cat }} {% if cat.blog_posts.published.count %}<i class="icon-plus{% if request.path == cat.get_absolute_url %} icon-minus{% endif %}"></i>{% endif %}</a>
     <ul>
@@ -13,14 +13,16 @@
     </ul>
   </li>
   {% endfor %}
+</ul>
 {% else %}
+<ul class="blog-post-loop">
   {% for post in category.blog_posts.published %}
     <li class="loop-article"><a href="{{ post.get_absolute_url }}">{{ post }}</a></li>
   {% empty %}
     <li class="loop-empty">This category doesn't have any articles yet.</li>
   {% endfor %}
-{% endif %}
 </ul>
+{% endif %}
 
 {% addtoblock "js" %}
 <script>
