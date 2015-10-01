@@ -92,6 +92,7 @@ class NewsCategory(TranslatableModel):
     objects = TranslationManager()
 
     class Meta:
+        ordering = ['sort_order']
         verbose_name = _('news category')
         verbose_name_plural = _('news categories')
 
