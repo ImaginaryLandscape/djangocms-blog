@@ -174,8 +174,6 @@ class Post(ModelMeta, TranslatableModel):
         post_text=HTMLField(_('text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
-    content = PlaceholderField('post_content', related_name='post_content')
-    related_posts = PlaceholderField('post_related_posts')
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
@@ -276,6 +274,9 @@ class BlogPost(Post):
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
         related_name='blog_posts',)
     objects = GenericDateTaggedManager()
+    content = PlaceholderField('post_content', related_name='blog_post_content')
+    related_posts = PlaceholderField('post_related_posts', related_name='blog_post_related_posts')
+    
     class Meta:
         verbose_name = _('blog article')
         verbose_name_plural = _('blog articles')
@@ -286,6 +287,9 @@ class NewsPost(Post):
     categories = models.ManyToManyField('djangocms_blog.NewsCategory', verbose_name=_(u'category'),
         blank=True, related_name='news_posts',)
     objects = GenericDateTaggedManager()
+    content = PlaceholderField('post_content', related_name='news_post_content')
+    related_posts = PlaceholderField('post_related_posts', related_name='news_post_related_posts')
+
     class Meta:
         verbose_name = _('news article')
         verbose_name_plural = _('news articles')
