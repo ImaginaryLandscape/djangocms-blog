@@ -20,7 +20,8 @@ except ImportError:
         pass
 
 
-class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
+class BlogCategoryAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
+                        PlaceholderAdminMixin, TranslatableAdmin):
     list_display = ['name', 'parent', 'sort_order']
     list_editable = ['sort_order']
     list_filter = ['parent']
