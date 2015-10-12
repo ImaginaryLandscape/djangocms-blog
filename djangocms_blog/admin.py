@@ -48,7 +48,8 @@ class NewsCategoryAdmin(BlogCategoryAdmin):
 
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                 PlaceholderAdminMixin, TranslatableAdmin):
-    list_display = ['title', 'author', 'date_published', 'date_published_end']
+    list_display = ['title', 'author', 'get_categories', 'date_published', 'date_published_end']
+    list_per_page = 50
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
@@ -93,6 +94,11 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
         return fsets
+
+    def get_categories(self, obj):
+        return ",<br>".join([p.name for p in obj.categories.all()])
+    get_categories.short_description = 'Categories'
+    get_categories.allow_tags = True
 
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('title',)}
