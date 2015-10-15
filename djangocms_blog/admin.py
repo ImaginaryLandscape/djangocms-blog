@@ -46,8 +46,8 @@ class NewsCategoryAdmin(BlogCategoryAdmin):
     class Meta:
         ordering = ('sort_order', 'name')
 
-class PostAdmin(TranslatableAdmin, EnhancedModelAdminMixin, 
-                FrontendEditableAdminMixin, PlaceholderAdminMixin):
+class PostAdmin(FrontendEditableAdminMixin, PlaceholderAdminMixin,
+                TranslatableAdmin, EnhancedModelAdminMixin):
     list_display = ['title', 'author', 'get_categories', 'date_published']
     list_filter = ['categories']
     list_per_page = 50
