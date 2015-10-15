@@ -41,6 +41,7 @@
     <p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
     {% endif %}
     {% if is_paginated %}
+    {% comment %}
     <nav class="{% firstof css_grid instance.css_grid %} pagination">
         {% if page_obj.has_previous %}
             <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}">&laquo; {% trans "previous" %}</a>
@@ -52,6 +53,7 @@
             <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}">{% trans "next" %} &raquo;</a>
         {% endif %}
     </nav>
+    {% endcomment %}
     {% endif %}
 </section>
 {% endblock %}
