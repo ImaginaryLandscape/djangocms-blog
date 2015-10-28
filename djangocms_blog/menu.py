@@ -3,29 +3,36 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.menu_bases import CMSAttachMenu
 from django.db.models.signals import post_delete, post_save
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, get_language_from_request, ugettext_lazy as _
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .models import BlogCategory, NewsCategory
+from .models import BlogCategory, BlogPost, NewsCategory, NewsPost
 
 
 class BlogCategoryMenu(CMSAttachMenu):
     name = _('Blog Category menu')
 
-    def get_nodes(self, request):
+    def get_nodes(self, request):        
         nodes = []
-        qs = BlogCategory.objects.translated(get_language())
-        qs = qs.order_by('parent__id', 'sort_order', 'id', 'translations__name')
-        for category in qs:
+
+        language = get_language_from_request(request, check_path=True)        
+
+        categories = BlogCategory.objects.active_translations(language).distinct()        
+        categories = categories.order_by('parent__id', 'sort_order', 'id', 'translations__name')
+        for category in categories:
             node = NavigationNode(
                 category.name,
                 category.get_absolute_url(),
-                category.pk,
-                category.parent_id
+                '%s-%s' % (category.__class__.__name__, category.pk),
+                ('%s-%s' % (category.__class__.__name__, category.parent.id) if category.parent
+                else None),
+                attr=dict(posts=category.blog_posts.published(),),
             )
             nodes.append(node)
+
         return nodes
+
 menu_pool.register_menu(BlogCategoryMenu)
 
 class NewsCategoryMenu(CMSAttachMenu):
@@ -39,10 +46,12 @@ class NewsCategoryMenu(CMSAttachMenu):
             node = NavigationNode(
                 category.name,
                 category.get_absolute_url(),
-                category.pk
+                category.pk,
+                attr=dict(posts=category.news_posts.published(),),                
             )
             nodes.append(node)
         return nodes
+
 menu_pool.register_menu(NewsCategoryMenu)
 
 
