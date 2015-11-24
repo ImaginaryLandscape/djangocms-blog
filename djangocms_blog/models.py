@@ -335,6 +335,8 @@ class LatestPostsPlugin(BasePostPlugin):
     def copy_relations(self, oldinstance):
         for tag in oldinstance.tags.all():
             self.tags.add(tag)
+        for cat in oldinstance.categories.all():
+            self.categories.add(cat)
 
     def get_posts(self, request):
         posts = self.post_queryset(request)
