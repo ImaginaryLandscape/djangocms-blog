@@ -282,6 +282,9 @@ class BlogPost(Post):
         verbose_name_plural = _('blog articles')
         ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
+        permissions = ( 
+            ( "can_publish_blog", "Can publish blog article" ),
+        )
 
 class NewsPost(Post):
     categories = models.ManyToManyField('djangocms_blog.NewsCategory', verbose_name=_(u'category'),
@@ -295,6 +298,10 @@ class NewsPost(Post):
         verbose_name_plural = _('news articles')
         ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
+        permissions = ( 
+            ( "can_publish_news", "Can publish news article" ),
+        )
+
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,

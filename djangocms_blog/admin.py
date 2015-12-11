@@ -58,7 +58,7 @@ class PostAdmin(FrontendEditableAdminMixin, PlaceholderAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'categories', 'publish')]
+            'fields': [('title', 'categories')]
         }),
         ('Info', {
             'fields': (['slug', 'tags'],
@@ -87,6 +87,9 @@ class PostAdmin(FrontendEditableAdminMixin, PlaceholderAdminMixin,
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
+    
+        if request.user.has_perm('djangocms_blog.can_publish_blog'):
+            fsets[0][1]['fields'].append('publish')
         if self.use_abstract():
             fsets[0][1]['fields'].append('abstract')
         if not get_setting('USE_PLACEHOLDER'):
