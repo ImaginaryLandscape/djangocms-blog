@@ -27,7 +27,6 @@ class BaseBlogView(ViewUrlMixin):
         response_kwargs['current_app'] = resolve(self.request.path).namespace
         return super(BaseBlogView, self).render_to_response(context, **response_kwargs)
 
-
 class PostListView(BaseBlogView, ListView):
     model = BlogPost
     context_object_name = 'post_list'
@@ -53,8 +52,8 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     view_url_name = 'djangocms_blog:post-detail'
 
     def get_queryset(self):
-        queryset = self.model._default_manager.all()
-        if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
+        queryset = self.model._default_manager.all()        
+        if not self.request.user.is_authenticated():
             queryset = queryset.published()
         return queryset
 
