@@ -3,6 +3,13 @@
 
 {% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
+{% block title %}
+  {% if author %}{% trans "Author" %}: {{ author.get_full_name }}
+  {% elif archive_date %}{% trans "Archive" %}: {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+  {% elif tagged_entries %}{% trans "Tag" %}: {{ tagged_entries|capfirst }}
+  {% elif category %}{% page_attribute "page_title" request.current_page.get_root %}: {{ category }}{% endif %}
+{% endblock %}
+
 {% block content_header %}
   {% if author or archive_date or tagged_entries or category %}
     <header class="blog-header">
