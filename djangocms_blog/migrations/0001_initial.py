@@ -9,7 +9,7 @@ import meta_mixin.models
 import taggit_autosuggest.managers
 from django.conf import settings
 from django.db import models, migrations
-
+from ..models import thumbnail_model
 
 class Migration(migrations.Migration):
 
@@ -91,8 +91,8 @@ class Migration(migrations.Migration):
                 ('categories', models.ManyToManyField(related_name='blog_posts', verbose_name='category', to='djangocms_blog.BlogCategory')),
                 ('content', cms.models.fields.PlaceholderField(slotname='post_content', editable=False, to='cms.Placeholder', null=True)),
                 ('main_image', filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', verbose_name='Main image', blank=True, to='filer.Image', null=True)),
-                ('main_image_full', models.ForeignKey(related_name='djangocms_blog_post_full', verbose_name='Main image full', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
-                ('main_image_thumbnail', models.ForeignKey(related_name='djangocms_blog_post_thumbnail', verbose_name='Main image thumbnail', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
+                ('main_image_full', models.ForeignKey(related_name='djangocms_blog_post_full', verbose_name='Main image full', blank=True, to=thumbnail_model, null=True)),
+                ('main_image_thumbnail', models.ForeignKey(related_name='djangocms_blog_post_thumbnail', verbose_name='Main image thumbnail', blank=True, to=thumbnail_model, null=True)),
                 ('tags', taggit_autosuggest.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True, help_text='A comma-separated list of tags.', verbose_name='Tags')),
             ],
             options={

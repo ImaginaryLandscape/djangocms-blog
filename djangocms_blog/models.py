@@ -16,9 +16,15 @@ from meta_mixin.models import ModelMeta
 from parler.managers import TranslationManager
 from parler.models import TranslatableModel, TranslatedFields
 from taggit_autosuggest.managers import TaggableManager
-
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
+
+try:
+    from filer.models import ThumbnailOption
+    thumbnail_model = 'filer.ThumbnailOption'
+except ImportError:
+    from cmsplugin_filer_image.models import ThumbnailOption
+    thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_blogpost_current'
 NEWS_CURRENT_POST_IDENTIFIER = 'djangocms_newspost_current'
@@ -141,12 +147,12 @@ class Post(ModelMeta, TranslatableModel):
     main_image = FilerImageField(verbose_name=_('main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
-    main_image_thumbnail = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
+    main_image_thumbnail = models.ForeignKey(thumbnail_model,
                                              verbose_name=_('main image thumbnail'),
                                              related_name='djangocms_blog_post_thumbnail',
                                              on_delete=models.SET_NULL,
                                              blank=True, null=True)
-    main_image_full = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
+    main_image_full = models.ForeignKey(thumbnail_model,
                                         verbose_name=_('main image full'),
                                         related_name='djangocms_blog_post_full',
                                         on_delete=models.SET_NULL,
