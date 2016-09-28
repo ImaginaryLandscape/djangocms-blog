@@ -50,6 +50,7 @@ class PostAdmin(FrontendEditableAdminMixin, PlaceholderAdminMixin,
                 TranslatableAdmin, EnhancedModelAdminMixin):
     list_display = ['title', 'author', 'get_categories', 'date_published']
     list_filter = ['categories']
+    filter_horizontal = ['categories']
     list_per_page = 50
     search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
@@ -58,19 +59,19 @@ class PostAdmin(FrontendEditableAdminMixin, PlaceholderAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'categories', 'publish')]
+            'fields': [['title','publish'], 'categories']
         }),
         ('Info', {
-            'fields': (['slug', 'tags'],
-                       ('date_published', 'date_published_end', 'enable_comments')),
+            'fields': [['slug'], ['tags'],
+                       ['date_published'], ['date_published_end'], ['enable_comments']],
             'classes': ('collapse',)
         }),
         ('Images', {
-            'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
+            'fields': [['main_image'], ['main_image_thumbnail', 'main_image_full']],
             'classes': ('collapse',)
         }),
         ('SEO', {
-            'fields': [('meta_description', 'meta_title', 'meta_keywords')],
+            'fields': [['meta_description', 'meta_title'], ['meta_keywords']],
             'classes': ('collapse',)
         }),
     ]
