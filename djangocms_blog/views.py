@@ -199,7 +199,7 @@ class TaggedListView(BaseConfigListViewMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return self.optimize(qs.filter(tags__slug=self.kwargs["tag"]))
+        return self.optimize(qs.filter(post__tags__slug=self.kwargs["tag"]))
 
     def get_context_data(self, **kwargs):
         kwargs["tagged_entries"] = self.kwargs.get("tag") if "tag" in self.kwargs else None
