@@ -177,9 +177,9 @@ class PostArchiveView(BaseConfigListViewMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         if "month" in self.kwargs:
-            qs = qs.filter(**{"%s__month" % self.date_field: self.kwargs["month"]})
+            qs = qs.filter(**{"post__%s__month" % self.date_field: self.kwargs["month"]})
         if "year" in self.kwargs:
-            qs = qs.filter(**{"%s__year" % self.date_field: self.kwargs["year"]})
+            qs = qs.filter(**{"post__%s__year" % self.date_field: self.kwargs["year"]})
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
