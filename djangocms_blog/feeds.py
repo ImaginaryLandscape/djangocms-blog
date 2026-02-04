@@ -39,8 +39,7 @@ class LatestEntriesFeed(Feed):
 
     def items(self, obj=None):
         return (
-            Post.objects.namespace(self.namespace)
-            .published_on_rss()
+            Post.objects.filter(app_config__namespace=self.namespace, include_in_rss=True)
             .order_by("-date_published")[: self.feed_items_number]
         )
 
@@ -62,7 +61,7 @@ class LatestEntriesFeed(Feed):
         return item.guid
 
     def item_author_name(self, item):
-        return item.get_author_name()
+        return item.get_author()
 
     def item_author_url(self, item):
         return item.get_author_url()
